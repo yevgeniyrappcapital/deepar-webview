@@ -59,7 +59,7 @@
 </head>
 <body>
     <h1>
-        DeepAR Beauty Интеграция v.7
+        DeepAR Beauty Интеграция v.8
     </h1>
     <div id="imageContainer">
         <canvas id="arCanvas" width="640" height="480"></canvas>
@@ -183,6 +183,8 @@
             log('Начало процесса применения макияжа...', 'info');
 
             try {
+                myBeauty.reset()
+                deepAR.clearEffect()
                 // Применяем настройки макияжа
                 myBeauty.faceMorphing.eyeSize.set(-50);
                 myBeauty.skinSmoothing.set(85);
