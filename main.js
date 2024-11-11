@@ -107,8 +107,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+log('window.deepar', 'info');
 window.deepar = deepar__WEBPACK_IMPORTED_MODULE_0__
+log('window.Beauty', 'info');
 window.Beauty = _deepar_beauty__WEBPACK_IMPORTED_MODULE_1__
+log('ok', 'info');
 
 // Log the version. Just in case.
 console.log("Deepar version: " + window.deepar.version);
