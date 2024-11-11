@@ -263,7 +263,7 @@ document.getElementById('apply-makeup-look-1').onclick = async function() {
     log('myBeauty effect null...', 'info');
   }
   await delay(33);
-  await processPhoto(image);
+  image = await processPhoto(image);
 }
 document.getElementById('apply-makeup-look-2').onclick = async function() {
   deepAR.switchEffect('./effects/look2');
