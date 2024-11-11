@@ -252,6 +252,7 @@ document.getElementById('load-photo-2').onclick = async function() {
 document.getElementById('apply-makeup-look-1').onclick = async function() {
   src_myBeauty.reset()
   src_deepAR.clearEffect()
+  await src_delay(200);
   // deepAR.switchEffect('./effects/look1');
   if (src_myBeauty) {
     src_myBeauty.faceMorphing.eyeSize.set(-50);
@@ -265,7 +266,7 @@ document.getElementById('apply-makeup-look-1').onclick = async function() {
   } else {
     src_log('myBeauty effect null...', 'info');
   }
-  await src_delay(33);
+  await src_delay(200);
   src_image = await src_processPhoto(src_image);
 }
 document.getElementById('apply-makeup-look-2').onclick = async function() {
