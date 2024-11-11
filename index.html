@@ -59,12 +59,12 @@
 </head>
 <body>
     <h1>
-        DeepAR Beauty Интеграция v.4
+        DeepAR Beauty Интеграция v.5
     </h1>
     <div id="imageContainer">
         <canvas id="arCanvas" width="640" height="480"></canvas>
     </div>
-    <div id="deepar-div"></div>
+
     <button id="processButton" onclick="processImage()">Применить Макияж</button>
     
     <div id="logContainer">
@@ -75,6 +75,8 @@
         let deepAR = null;
         let beauty = null;
         let inputImage = null;
+
+        const canvas = document.getElementById('arCanvas');
 
         /**
          * Добавляет сообщение в лог.
@@ -100,9 +102,18 @@
             log('Инициализация DeepAR начата...', 'info');
             try {
                 deepAR = await deepar.initialize({
-                    licenseKey: licenseKey,
-                    previewElement: document.querySelector('#deepar-div')
-                })
+                  licenseKey: licenseKey,
+                  canvas: canvas,
+                //   rootPath: "./deepar-resources", // See webpack.config.js and package.json build script.
+                  additionalOptions: {
+                    cameraConfig: {
+                      disableDefaultCamera: true
+                    },
+                    hint: "faceModelsPredownload" // Download the face tracking model as soon as possible.
+                  }
+                });
+            
+                deepAR.setPaused(true);
                 log('DeepAR успешно инициализирован.', 'success');
 
                 // Загрузка Beauty Pack
