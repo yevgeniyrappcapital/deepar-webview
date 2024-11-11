@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>WebView Взаимодействие</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #imageContainer {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Взаимодействие с Swift через WebView</h1>
+    <div id="imageContainer">
+        <img id="displayImage" src="" alt="Изображение не установлено">
+    </div>
+    <button onclick="processImage()">Обработать изображение</button>
+
+    <script>
+        /**
+         * Устанавливает изображение, полученное из Swift.
+         * @param {string} imageData - Строка в формате Data URL (например, "data:image/png;base64,...")
+         */
+        function setImage(imageData) {
+            const imgElement = document.getElementById('displayImage');
+            imgElement.src = imageData;
+            console.log('Изображение установлено из Swift.');
+        }
+
+        /**
+         * Обрабатывает текущее изображение.
+         * В данном примере добавляется красная граница к изображению.
+         */
+        function processImage() {
+            const imgElement = document.getElementById('displayImage');
+            if (!imgElement.src) {
+                alert('Изображение не установлено.');
+                return;
+            }
+
+            // Создаем элемент Image для загрузки текущего изображения
+            const img = new Image();
+            img.src = imgElement.src;
+
+            img.onload = function() {
+                const borderSize = 10; // Размер границы
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = img.width + borderSize * 2;
+                canvas.height = img.height + borderSize * 2;
+
+                // Заполнение фона красным цветом (граница)
+                ctx.fillStyle = '#FF0000';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Рисуем исходное изображение по центру
+                ctx.drawImage(img, borderSize, borderSize);
+
+                // Получаем обработанное изображение в формате Data URL
+                const processedDataURL = canvas.toDataURL();
+
+                // Обновляем src изображения на странице
+                imgElement.src = processedDataURL;
+
+                console.log('Изображение обработано.');
+
+                // Отправляем обработанное изображение обратно в Swift
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
+                    window.webkit.messageHandlers.imageHandler.postMessage(processedDataURL);
+                } else {
+                    console.warn('Message handler "imageHandler" не найден.');
+                }
+            };
+
+            img.onerror = function() {
+                alert('Не удалось загрузить изображение для обработки.');
+            };
+        }
+
+        /**
+         * Возвращает текущее изображение в формате Data URL.
+         * @returns {string} Data URL изображения.
+         */
+        function getImage() {
+            const imgElement = document.getElementById('displayImage');
+            return imgElement.src;
+        }
+
+        // Слушатель события загрузки документа
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log('index.html загружен и готов к взаимодействию.');
+        });
+    </script>
+</body>
+</html>
