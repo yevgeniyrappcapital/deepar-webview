@@ -78,7 +78,7 @@ let myBeauty = null;
  * Эта функция должна быть вызвана из Swift после загрузки страницы.
  * @param {string} licenseKey - Лицензионный ключ DeepAR.
  */
-function setLicenseKey(licenseKey) {
+window.setLicenseKey = function(licenseKey) {
   if (deepAR) {
       log('DeepAR уже инициализирован.', 'info');
       return;
