@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>DeepAR Beauty Integration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            text-align: center;
+        }
+        #imageContainer {
+            margin-top: 20px;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>DeepAR Beauty Интеграция</h1>
+    <div id="imageContainer">
+        <canvas id="arCanvas"></canvas>
+    </div>
+    <button onclick="processImage()">Применить Макияж</button>
+
+    <!-- Подключение DeepAR SDK -->
+    <script src="deepar.min.js"></script> <!-- Убедитесь, что deepar.min.js добавлен в проект -->
+
+    <script>
+        let deepar = null;
+        let inputImage = null;
+
+        /**
+         * Инициализирует DeepAR с заданным лицензионным ключом.
+         * @param {string} licenseKey - Лицензионный ключ DeepAR.
+         */
+        async function initializeDeepAR(licenseKey) {
+            deepar = new DeepAR({
+                canvas: document.getElementById('arCanvas'),
+                licenseKey: licenseKey, // Лицензионный ключ устанавливается через эту функцию
+                outputOptions: {
+                    format: DeepAR.OutputFormat.PNG
+                }
+            });
+
+            try {
+                await deepar.initialize();
+                console.log('DeepAR инициализирован.');
+
+                // Загрузка Beauty Pack
+                await deepar.loadEffectFromURL('baseBeauty.deepar'); // Убедитесь, что путь к файлу корректен
+                console.log('Эффект макияжа загружен.');
+            } catch (error) {
+                console.error('Ошибка инициализации DeepAR:', error);
+                alert('Не удалось инициализировать DeepAR.');
+            }
+        }
+
+        /**
+         * Устанавливает лицензионный ключ и инициализирует DeepAR.
+         * Эта функция должна быть вызвана из Swift после загрузки страницы.
+         * @param {string} licenseKey - Лицензионный ключ DeepAR.
+         */
+        function setLicenseKey(licenseKey) {
+            if (deepar) {
+                console.warn('DeepAR уже инициализирован.');
+                return;
+            }
+            initializeDeepAR(licenseKey);
+        }
+
+        /**
+         * Устанавливает изображение, полученное из Swift.
+         * @param {string} imageData - Строка в формате Data URL (например, "data:image/png;base64,...")
+         */
+        function setImage(imageData) {
+            if (!deepar) {
+                console.error('DeepAR не инициализирован.');
+                return;
+            }
+
+            // Создаем Image объект
+            const img = new Image();
+            img.src = imageData;
+
+            img.onload = () => {
+                inputImage = img;
+                // Рендерим изображение на canvas
+                const ctx = deepar.canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, deepar.canvas.width, deepar.canvas.height);
+                console.log('Изображение установлено из Swift.');
+            };
+
+            img.onerror = () => {
+                alert('Не удалось загрузить изображение для установки.');
+            };
+        }
+
+        /**
+         * Обрабатывает текущее изображение, применяя макияж с помощью DeepAR.
+         */
+        async function processImage() {
+            if (!deepar || !inputImage) {
+                alert('Изображение не установлено или DeepAR не инициализирован.');
+                return;
+            }
+
+            try {
+                // Применяем эффект макияжа
+                await deepar.switchEffect('baseBeauty.deepar'); // Убедитесь, что название эффекта совпадает
+
+                // Обновляем canvas с примененным эффектом
+                deepar.update();
+
+                // Получаем обработанное изображение как Data URL
+                const processedDataURL = await deepar.exportFrame(DeepAR.OutputFormat.PNG);
+
+                console.log('Макияж применен.');
+
+                // Отправляем обработанное изображение обратно в Swift
+                if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
+                    window.webkit.messageHandlers.imageHandler.postMessage(processedDataURL);
+                } else {
+                    console.warn('Message handler "imageHandler" не найден.');
+                }
+            } catch (error) {
+                console.error('Ошибка при обработке изображения:', error);
+                alert('Произошла ошибка при обработке изображения.');
+            }
+        }
+
+        /**
+         * Возвращает текущее изображение в формате Data URL.
+         * @returns {Promise<string>} Data URL изображения.
+         */
+        async function getImage() {
+            if (!deepar) {
+                console.error('DeepAR не инициализирован.');
+                return '';
+            }
+
+            try {
+                const dataURL = await deepar.exportFrame(DeepAR.OutputFormat.PNG);
+                return dataURL;
+            } catch (error) {
+                console.error('Ошибка при экспорте изображения:', error);
+                return '';
+            }
+        }
+
+        // Обработчик ошибок глобально
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Global error:', message, 'at', source, ':', lineno, ':', colno);
+        };
+    </script>
+</body>
+</html>
