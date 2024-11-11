@@ -16,28 +16,59 @@
         canvas {
             max-width: 100%;
             height: auto;
+            border: 1px solid #ccc;
         }
         button {
             margin-top: 10px;
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+        }
+        #processButton {
+            background-color: #28a745;
+        }
+        #logContainer {
+            margin-top: 20px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+        .log-entry.success {
+            color: green;
+        }
+        .log-entry.error {
+            color: red;
+        }
+        .log-entry.info {
+            color: blue;
         }
     </style>
-    <script src='https://cdn.jsdelivr.net/npm/deepar/js/deepar.js'> </script>
+    <script src='https://cdn.jsdelivr.net/npm/deepar/js/deepar.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/@deepar/beauty"></script>
 </head>
 <body>
     <h1>
-        DeepAR Beauty Интеграция v.1
+        DeepAR Beauty Интеграция v.2
     </h1>
     <div id="imageContainer">
-        <canvas id="arCanvas"></canvas>
+        <canvas id="arCanvas" width="640" height="480"></canvas>
     </div>
-    <button onclick="processImage()">Применить Макияж</button>
-
-    <!-- Подключение DeepAR SDK -->
-    <!-- <script src="deepar.min.js"></script> -->
+    <button id="processButton" onclick="processImage()">Применить Макияж</button>
+    
+    <div id="logContainer">
+        <h3>Логи:</h3>
+    </div>
 
     <script>
         let deepar = null;
@@ -45,10 +76,27 @@
         let inputImage = null;
 
         /**
+         * Добавляет сообщение в лог.
+         * @param {string} message - Сообщение для логирования.
+         * @param {string} type - Тип сообщения: 'info', 'success', 'error'.
+         */
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+
+        /**
          * Инициализирует DeepAR с заданным лицензионным ключом.
          * @param {string} licenseKey - Лицензионный ключ DeepAR.
          */
         async function initializeDeepAR(licenseKey) {
+            log('Инициализация DeepAR начата...', 'info');
             deepar = new DeepAR({
                 canvas: document.getElementById('arCanvas'),
                 licenseKey: licenseKey, // Лицензионный ключ устанавливается через эту функцию
@@ -59,14 +107,14 @@
 
             try {
                 await deepar.initialize();
-                console.log('DeepAR инициализирован.');
+                log('DeepAR успешно инициализирован.', 'success');
 
                 // Загрузка Beauty Pack
-                // await deepar.loadEffectFromURL('baseBeauty.deepar'); // Убедитесь, что путь к файлу корректен
+                log('Загрузка Beauty Pack начата...', 'info');
                 beauty = await Beauty.initializeBeauty(deepar, "https://cdn.jsdelivr.net/npm/@deepar/beauty/dist/");
-                console.log('Эффект макияжа загружен.');
+                log('Эффект макияжа успешно загружен.', 'success');
             } catch (error) {
-                console.error('Ошибка инициализации DeepAR:', error);
+                log(`Ошибка инициализации DeepAR: ${error}`, 'error');
                 alert('Не удалось инициализировать DeepAR.');
             }
         }
@@ -78,9 +126,10 @@
          */
         function setLicenseKey(licenseKey) {
             if (deepar) {
-                console.warn('DeepAR уже инициализирован.');
+                log('DeepAR уже инициализирован.', 'info');
                 return;
             }
+            log('Установка лицензионного ключа DeepAR...', 'info');
             initializeDeepAR(licenseKey);
         }
 
@@ -90,10 +139,11 @@
          */
         function setImage(imageData) {
             if (!deepar) {
-                console.error('DeepAR не инициализирован.');
+                log('DeepAR не инициализирован. Не удалось установить изображение.', 'error');
                 return;
             }
 
+            log('Загрузка изображения из Swift...', 'info');
             // Создаем Image объект
             const img = new Image();
             img.src = imageData;
@@ -103,10 +153,11 @@
                 // Рендерим изображение на canvas
                 const ctx = deepar.canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, deepar.canvas.width, deepar.canvas.height);
-                console.log('Изображение установлено из Swift.');
+                log('Изображение успешно установлено и отображено.', 'success');
             };
 
             img.onerror = () => {
+                log('Не удалось загрузить изображение для установки.', 'error');
                 alert('Не удалось загрузить изображение для установки.');
             };
         }
@@ -116,37 +167,43 @@
          */
         async function processImage() {
             if (!deepar || !inputImage) {
+                log('Изображение не установлено или DeepAR не инициализирован.', 'error');
                 alert('Изображение не установлено или DeepAR не инициализирован.');
                 return;
             }
 
+            log('Начало процесса применения макияжа...', 'info');
+
             try {
-                // Применяем эффект макияжа
-                beauty.faceMorphing.eyeSize.set(-50)
-                beauty.skinSmoothing.set(85)
-                beauty.faceMakeup.blush.intensity.set(40)
-                beauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255})
-                beauty.lipMakeup.lipstick.enable.set(true)
-                beauty.lipMakeup.lipstick.shade.setTemplate("matteNude")
-                beauty.lipMakeup.lipstick.amount.set(70)
-                beauty.colorFilters.filter.setTemplate("filmContrast")
+                // Применяем настройки макияжа
+                beauty.faceMorphing.eyeSize.set(-50);
+                beauty.skinSmoothing.set(85);
+                beauty.faceMakeup.blush.intensity.set(40);
+                beauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
+                beauty.lipMakeup.lipstick.enable.set(true);
+                beauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
+                beauty.lipMakeup.lipstick.amount.set(70);
+                beauty.colorFilters.filter.setTemplate("filmContrast");
+
+                log('Настройки макияжа применены.', 'info');
 
                 // Обновляем canvas с примененным эффектом
                 deepar.update();
+                log('DeepAR обновлён с примененными эффектами.', 'success');
 
                 // Получаем обработанное изображение как Data URL
                 const processedDataURL = await deepar.exportFrame(DeepAR.OutputFormat.PNG);
-
-                console.log('Макияж применен.');
+                log('Экспорт обработанного изображения завершен.', 'success');
 
                 // Отправляем обработанное изображение обратно в Swift
                 if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
                     window.webkit.messageHandlers.imageHandler.postMessage(processedDataURL);
+                    log('Обработанное изображение отправлено обратно в Swift.', 'success');
                 } else {
-                    console.warn('Message handler "imageHandler" не найден.');
+                    log('Message handler "imageHandler" не найден.', 'error');
                 }
             } catch (error) {
-                console.error('Ошибка при обработке изображения:', error);
+                log(`Ошибка при обработке изображения: ${error}`, 'error');
                 alert('Произошла ошибка при обработке изображения.');
             }
         }
@@ -157,22 +214,24 @@
          */
         async function getImage() {
             if (!deepar) {
-                console.error('DeepAR не инициализирован.');
+                log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
                 return '';
             }
 
             try {
+                log('Экспорт текущего изображения из DeepAR...', 'info');
                 const dataURL = await deepar.exportFrame(DeepAR.OutputFormat.PNG);
+                log('Экспорт изображения завершен.', 'success');
                 return dataURL;
             } catch (error) {
-                console.error('Ошибка при экспорте изображения:', error);
+                log(`Ошибка при экспорте изображения: ${error}`, 'error');
                 return '';
             }
         }
 
         // Обработчик ошибок глобально
         window.onerror = function(message, source, lineno, colno, error) {
-            console.error('Global error:', message, 'at', source, ':', lineno, ':', colno);
+            log(`Global error: ${message} at ${source}:${lineno}:${colno}`, 'error');
         };
     </script>
 </body>
