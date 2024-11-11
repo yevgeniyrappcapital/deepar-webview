@@ -112,6 +112,7 @@ window.Beauty = _deepar_beauty__WEBPACK_IMPORTED_MODULE_1__
 
 // Log the version. Just in case.
 console.log("Deepar version: " + window.deepar.version);
+console.log("Beauty version: " + window.Beauty.version);
 
 /**
  * Добавляет сообщение в лог.
@@ -246,14 +247,18 @@ document.getElementById('load-photo-2').onclick = async function() {
 }
 document.getElementById('apply-makeup-look-1').onclick = async function() {
   // deepAR.switchEffect('./effects/look1');
-  myBeauty.faceMorphing.eyeSize.set(-50);
-  myBeauty.skinSmoothing.set(85);
-  myBeauty.faceMakeup.blush.intensity.set(40);
-  myBeauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
-  myBeauty.lipMakeup.lipstick.enable.set(true);
-  myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
-  myBeauty.lipMakeup.lipstick.amount.set(70);
-  myBeauty.colorFilters.filter.setTemplate("filmContrast");
+  if (myBeauty) {
+    myBeauty.faceMorphing.eyeSize.set(-50);
+    myBeauty.skinSmoothing.set(85);
+    myBeauty.faceMakeup.blush.intensity.set(40);
+    myBeauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
+    myBeauty.lipMakeup.lipstick.enable.set(true);
+    myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
+    myBeauty.lipMakeup.lipstick.amount.set(70);
+    myBeauty.colorFilters.filter.setTemplate("filmContrast");
+  } else {
+    log('myBeauty effect null...', 'info');
+  }
   await delay(33);
   await processPhoto(image);
 }
