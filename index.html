@@ -59,7 +59,7 @@
 </head>
 <body>
     <h1>
-        DeepAR Beauty Интеграция v.5
+        DeepAR Beauty Интеграция v.6
     </h1>
     <div id="imageContainer">
         <canvas id="arCanvas" width="640" height="480"></canvas>
@@ -73,7 +73,7 @@
 
     <script>
         let deepAR = null;
-        let beauty = null;
+        let myBeauty = null;
         let inputImage = null;
 
         const canvas = document.getElementById('arCanvas');
@@ -118,7 +118,7 @@
 
                 // Загрузка Beauty Pack
                 log('Загрузка Beauty Pack начата...', 'info');
-                beauty = await Beauty.initializeBeauty(deepAR, "https://cdn.jsdelivr.net/npm/@deepar/beauty/dist/");
+                myBeauty = await beauty.initializeBeauty(deepAR, "https://cdn.jsdelivr.net/npm/@deepar/beauty/dist/");
                 log('Эффект макияжа успешно загружен.', 'success');
             } catch (error) {
                 log(`Ошибка инициализации DeepAR: ${error}`, 'error');
@@ -183,14 +183,14 @@
 
             try {
                 // Применяем настройки макияжа
-                beauty.faceMorphing.eyeSize.set(-50);
-                beauty.skinSmoothing.set(85);
-                beauty.faceMakeup.blush.intensity.set(40);
-                beauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
-                beauty.lipMakeup.lipstick.enable.set(true);
-                beauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
-                beauty.lipMakeup.lipstick.amount.set(70);
-                beauty.colorFilters.filter.setTemplate("filmContrast");
+                myBeauty.faceMorphing.eyeSize.set(-50);
+                myBeauty.skinSmoothing.set(85);
+                myBeauty.faceMakeup.blush.intensity.set(40);
+                myBeauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
+                myBeauty.lipMakeup.lipstick.enable.set(true);
+                myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
+                myBeauty.lipMakeup.lipstick.amount.set(70);
+                myBeauty.colorFilters.filter.setTemplate("filmContrast");
 
                 log('Настройки макияжа применены.', 'info');
 
