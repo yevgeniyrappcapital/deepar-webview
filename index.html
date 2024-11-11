@@ -59,7 +59,7 @@
 </head>
 <body>
     <h1>
-        DeepAR Beauty Интеграция v.3
+        DeepAR Beauty Интеграция v.4
     </h1>
     <div id="imageContainer">
         <canvas id="arCanvas" width="640" height="480"></canvas>
@@ -121,7 +121,7 @@
          * @param {string} licenseKey - Лицензионный ключ DeepAR.
          */
         function setLicenseKey(licenseKey) {
-            if (deepar) {
+            if (deepAR) {
                 log('DeepAR уже инициализирован.', 'info');
                 return;
             }
@@ -134,7 +134,7 @@
          * @param {string} imageData - Строка в формате Data URL (например, "data:image/png;base64,...")
          */
         function setImage(imageData) {
-            if (!deepar) {
+            if (!deepAR) {
                 log('DeepAR не инициализирован. Не удалось установить изображение.', 'error');
                 return;
             }
@@ -147,8 +147,8 @@
             img.onload = () => {
                 inputImage = img;
                 // Рендерим изображение на canvas
-                const ctx = deepar.canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, deepar.canvas.width, deepar.canvas.height);
+                const ctx = deepAR.canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, deepAR.canvas.width, deepAR.canvas.height);
                 log('Изображение успешно установлено и отображено.', 'success');
             };
 
@@ -162,7 +162,7 @@
          * Обрабатывает текущее изображение, применяя макияж с помощью DeepAR.
          */
         async function processImage() {
-            if (!deepar || !inputImage) {
+            if (!deepAR || !inputImage) {
                 log('Изображение не установлено или DeepAR не инициализирован.', 'error');
                 alert('Изображение не установлено или DeepAR не инициализирован.');
                 return;
@@ -184,11 +184,11 @@
                 log('Настройки макияжа применены.', 'info');
 
                 // Обновляем canvas с примененным эффектом
-                deepar.update();
+                deepAR.update();
                 log('DeepAR обновлён с примененными эффектами.', 'success');
 
                 // Получаем обработанное изображение как Data URL
-                const processedDataURL = await deepar.exportFrame(DeepAR.OutputFormat.PNG);
+                const processedDataURL = await deepAR.exportFrame(DeepAR.OutputFormat.PNG);
                 log('Экспорт обработанного изображения завершен.', 'success');
 
                 // Отправляем обработанное изображение обратно в Swift
@@ -209,14 +209,14 @@
          * @returns {Promise<string>} Data URL изображения.
          */
         async function getImage() {
-            if (!deepar) {
+            if (!deepAR) {
                 log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
                 return '';
             }
 
             try {
                 log('Экспорт текущего изображения из DeepAR...', 'info');
-                const dataURL = await deepar.exportFrame(DeepAR.OutputFormat.PNG);
+                const dataURL = await deepAR.exportFrame(DeepAR.OutputFormat.PNG);
                 log('Экспорт изображения завершен.', 'success');
                 return dataURL;
             } catch (error) {
