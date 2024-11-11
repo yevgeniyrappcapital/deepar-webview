@@ -259,11 +259,11 @@ document.getElementById('apply-makeup-look-1').onclick = async function() {
     src_myBeauty.lipMakeup.lipstick.enable.set(true);
     src_myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
     src_myBeauty.lipMakeup.lipstick.amount.set(70);
-    src_myBeauty.colorFilters.filter.setTemplate("filmContrast");
+    // myBeauty.colorFilters.filter.setTemplate("filmContrast");
   } else {
     src_log('myBeauty effect null...', 'info');
   }
-  await src_delay(1200);
+  await src_delay(200);
   src_image = await src_processPhoto(src_image);
 }
 document.getElementById('apply-makeup-look-2').onclick = async function() {
