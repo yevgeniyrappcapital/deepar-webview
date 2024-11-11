@@ -64,6 +64,7 @@
     <div id="imageContainer">
         <canvas id="arCanvas" width="640" height="480"></canvas>
     </div>
+    <div id="deepar-div"></div>
     <button id="processButton" onclick="processImage()">Применить Макияж</button>
     
     <div id="logContainer">
@@ -71,7 +72,7 @@
     </div>
 
     <script>
-        let deepar = null;
+        let deepAR = null;
         let beauty = null;
         let inputImage = null;
 
@@ -97,21 +98,16 @@
          */
         async function initializeDeepAR(licenseKey) {
             log('Инициализация DeepAR начата...', 'info');
-            deepar = new DeepAR({
-                canvas: document.getElementById('arCanvas'),
-                licenseKey: licenseKey, // Лицензионный ключ устанавливается через эту функцию
-                outputOptions: {
-                    format: DeepAR.OutputFormat.PNG
-                }
-            });
-
             try {
-                await deepar.initialize();
+                deepAR = await deepar.initialize({
+                    licenseKey: licenseKey,
+                    previewElement: document.querySelector('#deepar-div')
+                })
                 log('DeepAR успешно инициализирован.', 'success');
 
                 // Загрузка Beauty Pack
                 log('Загрузка Beauty Pack начата...', 'info');
-                beauty = await Beauty.initializeBeauty(deepar, "https://cdn.jsdelivr.net/npm/@deepar/beauty/dist/");
+                beauty = await Beauty.initializeBeauty(deepAR, "https://cdn.jsdelivr.net/npm/@deepar/beauty/dist/");
                 log('Эффект макияжа успешно загружен.', 'success');
             } catch (error) {
                 log(`Ошибка инициализации DeepAR: ${error}`, 'error');
