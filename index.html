@@ -158,8 +158,9 @@
             img.onload = () => {
                 inputImage = img;
                 // Рендерим изображение на canvas
-                const ctx = deepAR.canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, deepAR.canvas.width, deepAR.canvas.height);
+                // const ctx = deepAR.canvas.getContext('2d');
+                deepAR.processImage(inputImage);
+                // ctx.drawImage(img, 0, 0, deepAR.canvas.width, deepAR.canvas.height);
                 log('Изображение успешно установлено и отображено.', 'success');
             };
 
