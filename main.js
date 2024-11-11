@@ -263,7 +263,7 @@ document.getElementById('apply-makeup-look-1').onclick = async function() {
   } else {
     src_log('myBeauty effect null...', 'info');
   }
-  await src_delay(200);
+  await src_delay(1200);
   src_image = await src_processPhoto(src_image);
 }
 document.getElementById('apply-makeup-look-2').onclick = async function() {
