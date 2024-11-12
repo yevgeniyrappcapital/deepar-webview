@@ -131,6 +131,7 @@ function src_log(message, type = 'info') {
     logContainer.scrollTop = logContainer.scrollHeight;
     console.log(`[${timestamp}] ${message}`);
 }
+
 // Resize the canvas according to screen size.
 const src_canvas = document.getElementById('deepar-canvas');
 src_canvas.width = window.innerWidth > window.innerHeight ? Math.floor(window.innerHeight * 0.66) : window.innerWidth;
@@ -183,9 +184,6 @@ async function src_initializeDeepAR(licenseKey) {
         src_myBeauty = await window.Beauty.initializeBeauty(src_deepAR, "https://cdn.jsdelivr.net/npm/@deepar/beauty/dist/");
         src_log('Эффект макияжа успешно загружен.', 'success');
 
-        // Hide the loading screen.
-        // document.getElementById("loader-wrapper").style.display = "none";
-
         // Initial image
         src_image = await src_getImageFrom('./test_photos/camera1.jpg');
               
@@ -196,12 +194,11 @@ async function src_initializeDeepAR(licenseKey) {
           // Push the current image frame because clearEffect can sometimes produce a black image when setPaused is called.
           src_deepAR.processImage(src_image);
         }).catch(() => {
-          src_log('Изображение ОШБИБКА установлено и отображено.', 'error');
+          src_log('Изображение ОШИБКА установлено и отображено.', 'error');
         });
       
-        // Load the inital photo.
+        // Load the initial photo.
         src_image = await src_processPhoto(src_image);
-        // document.getElementById("loader-wrapper").style.display = "none";
       
     } catch (error) {
         src_log(`Ошибка инициализации DeepAR: ${error}`, 'error');
@@ -269,7 +266,7 @@ async function src_process(inputImage) {
     }
     await src_delay(200);
     src_image = await src_processPhoto(src_image);
-    src_log('DeepAr обнволен', 'info');
+    src_log('DeepAR обновлен', 'info');
 
     // Получаем обработанное изображение как Data URL
     const processedDataURL = await src_deepAR.takeScreenshot();
@@ -301,10 +298,19 @@ window.getImage = async function () {
         src_log('Экспорт текущего изображения из DeepAR...', 'info');
         const dataURL = await src_deepAR.takeScreenshot();
         src_log('Экспорт изображения завершен.', 'success');
-        src_log(dataURL.substring(0,50));
+        // Отправляем Data URL обратно в Swift через message handler
+        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
+            window.webkit.messageHandlers.imageHandler.postMessage(dataURL);
+            src_log('Data URL изображения отправлен обратно в Swift.', 'success');
+        }
         return dataURL;
     } catch (error) {
         src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
+        // Отправляем пустую строку обратно в Swift при ошибке
+        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
+            window.webkit.messageHandlers.imageHandler.postMessage('');
+            src_log('Пустой Data URL отправлен обратно в Swift из-за ошибки.', 'error');
+        }
         return '';
     }
 }
@@ -341,53 +347,6 @@ async function src_processPhoto(src) {
 
   return image;
 }
-
-// document.getElementById('load-photo-1').onclick = async function() {
-//   image = await processPhoto('./test_photos/camera2.jpg');
-// }
-// document.getElementById('load-photo-2').onclick = async function() {
-//   image = await processPhoto('./test_photos/camera3.jpg');
-// }
-// document.getElementById('apply-makeup-look-1').onclick = async function() {
-//   // deepAR.switchEffect('./effects/look1');
-//   if (myBeauty) {
-//     myBeauty.faceMorphing.eyeSize.set(-50);
-//     myBeauty.skinSmoothing.set(85);
-//     myBeauty.faceMakeup.blush.intensity.set(40);
-//     myBeauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
-//     myBeauty.lipMakeup.lipstick.enable.set(true);
-//     myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
-//     myBeauty.lipMakeup.lipstick.amount.set(70);
-//   } else {
-//     log('myBeauty effect null...', 'info');
-//   }
-//   await delay(200);
-//   image = await processPhoto(image);
-// }
-// document.getElementById('apply-makeup-look-2').onclick = async function() {
-//   if (myBeauty) {
-//     myBeauty.colorFilters.filter.setTemplate("filmContrast");
-//   } else {
-//     log('myBeauty effect null...', 'info');
-//   }
-//   await delay(200);
-//   await processPhoto(image);
-// }
-// document.getElementById('remove-makeup-filter').onclick = function() {
-//   myBeauty.reset()
-//   deepAR.clearEffect()
-//   deepAR.processImage(image);
-// }
-// document.getElementById('download-photo').onclick = async function() {
-//   const screenshot = await deepAR.takeScreenshot();
-//   const a = document.createElement('a');
-//   a.href = screenshot;
-//   a.download = 'photo.png';
-//   document.body.appendChild(a);
-//   a.click();
-//   a.remove();
-// }
-
 })();
 
 MyLibrary = __webpack_exports__;
