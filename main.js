@@ -144,6 +144,7 @@ src_canvas.height = window.innerHeight;
 let src_deepAR = null;
 let src_myBeauty = null;
 let src_image = null;
+let src_deepARScren = null;
 
 /**
  * Sets the license key and initializes DeepAR.
@@ -271,6 +272,7 @@ async function src_process(inputImage) {
     await src_delay(200);
     src_image = await src_processPhoto(src_image);
     src_log('DeepAR обновлен', 'info');
+    src_deepARScren = prepareImage()
 
     // // Get the processed image as a Data URL
     // const processedDataURL = await deepAR.takeScreenshot();
@@ -292,32 +294,31 @@ async function src_process(inputImage) {
  * Returns the current image as a Data URL.
  * @returns {Promise<string>} Data URL of the image.
  */
-window.getImage = function () {
+window.getImage = async function () {
+  src_log('начало getImage', 'info');
+  if (!src_deepARScren) {
+    src_log('deepARScren Не удалось получить изображение.', 'error');
+    return '';
+  }
+  return src_deepARScren;
+}
+
+window.prepareImage = async function () {
   src_log('начало getImage', 'info');
   if (!src_deepAR) {
     src_log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
-    return new Promise(function(resolve, reject) {
-      resolve("Er1");
-    });
+    return 'Er1';
   }
 
   try {
-    return new Promise(function(resolve, reject) {
-      resolve("Success1");
-    });
-    // log('Экспорт текущего изображения из DeepAR...', 'info');
-    // const dataURL = await deepAR.takeScreenshot()
-    //   .then(function(result) {
-    //       return result;
-    //   });
-    // log('Экспорт изображения завершен.', 'success');
-    // log(dataURL.substring(0,42));
-    // return dataURL;
+    src_log('Экспорт текущего изображения из DeepAR...', 'info');
+    const dataURL = await src_deepAR.takeScreenshot();
+    src_log('Экспорт изображения завершен.', 'success');
+    src_log(dataURL.substring(0,42));
+    return dataURL;
   } catch (error) {
     src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
-    return new Promise(function(resolve, reject) {
-      resolve("Er2");
-    });
+    return 'Er2';
   }
 }
 
