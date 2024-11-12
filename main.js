@@ -303,6 +303,7 @@ let src_getImage = async function () {
         src_log('Экспорт текущего изображения из DeepAR...', 'info');
         const dataURL = await src_deepAR.takeScreenshot();
         src_log('Экспорт изображения завершен.', 'success');
+        src_log(dataURL.substring(0,42));
         return dataURL;
     } catch (error) {
         src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
