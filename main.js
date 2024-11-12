@@ -144,7 +144,7 @@ src_canvas.height = window.innerHeight;
 let src_deepAR = null;
 let src_myBeauty = null;
 let src_image = null;
-let src_deepARScren = null;
+let src_deepARScren = '';
 
 /**
  * Sets the license key and initializes DeepAR.
@@ -303,7 +303,13 @@ window.getImage = function () {
     return '';
   }
   src_log('начало4 getImage', 'info');
-  src_log('возврат: ' + src_deepARScren.substring(0,42), 'info');
+  if (src_deepARScren.length > 0) {
+    src_log('начало5 getImage', 'info');
+  }
+  if (src_deepARScren.length > 42) {
+    src_log(src_deepARScren.substring(0,42), 'info');
+  }
+  src_log('начало6 getImage', 'info');
   return src_deepARScren;
 }
 
