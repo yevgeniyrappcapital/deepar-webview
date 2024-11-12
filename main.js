@@ -197,8 +197,7 @@ async function src_initializeDeepAR(licenseKey) {
         //   // Push the current image frame because clearEffect can sometimes produce a black image when setPaused is called.
         //   deepAR.processImage(image);
         // }).catch(() => {
-        //   // The switchEffectCanceled error will be thrown if we try to load some beuty effect while this promise is not resolved.
-        //   // So we just ignore this error.
+        //   log('Изображение ОШБИБКА установлено и отображено.', 'error');
         // });
       
         // Load the inital photo.
@@ -232,14 +231,16 @@ async function src_uploadImage(imageData) {
   img.onload = async () => {
       document.getElementById("loader-wrapper").style.display = "none";
       src_image = img;
-
-      src_deepAR.switchEffect('./effects/look1').then(async() => {
+      src_deepAR.processImage(src_image);
+      src_deepAR.switchEffect('./effects/look1').then(() => {
         src_deepAR.clearEffect()
-        src_log('Изображение успешно установлено и отображено.', 'success');
-        src_image = await src_processPhoto(src_image);
+        src_deepAR.processImage(src_image);
+        src_log('Изображение switchEffect.', 'success');
       }).catch(() => {
         src_log('Изображение ОШБИБКА установлено и отображено.', 'error');
       });
+      src_image = await src_processPhoto(src_image);
+      src_log('Изображение успешно установлено и отображено.', 'success');
   };
 
   img.onerror = () => {
@@ -274,8 +275,8 @@ async function src_processPhoto(src) {
   // Process image multiple times to get more accurate tracking results.
   // Face tracking gets better with successive frames.
   src_deepAR.processImage(image);
-  // deepAR.processImage(image);
-  // deepAR.processImage(image);
+  src_deepAR.processImage(image);
+  src_deepAR.processImage(image);
 
   return image;
 }
