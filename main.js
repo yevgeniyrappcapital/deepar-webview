@@ -330,51 +330,51 @@ async function src_processPhoto(src) {
   return image;
 }
 
-document.getElementById('load-photo-1').onclick = async function() {
-  src_image = await src_processPhoto('./test_photos/camera2.jpg');
-}
-document.getElementById('load-photo-2').onclick = async function() {
-  src_image = await src_processPhoto('./test_photos/camera3.jpg');
-}
-document.getElementById('apply-makeup-look-1').onclick = async function() {
-  // deepAR.switchEffect('./effects/look1');
-  if (src_myBeauty) {
-    src_myBeauty.faceMorphing.eyeSize.set(-50);
-    src_myBeauty.skinSmoothing.set(85);
-    src_myBeauty.faceMakeup.blush.intensity.set(40);
-    src_myBeauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
-    src_myBeauty.lipMakeup.lipstick.enable.set(true);
-    src_myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
-    src_myBeauty.lipMakeup.lipstick.amount.set(70);
-  } else {
-    src_log('myBeauty effect null...', 'info');
-  }
-  await src_delay(200);
-  src_image = await src_processPhoto(src_image);
-}
-document.getElementById('apply-makeup-look-2').onclick = async function() {
-  if (src_myBeauty) {
-    src_myBeauty.colorFilters.filter.setTemplate("filmContrast");
-  } else {
-    src_log('myBeauty effect null...', 'info');
-  }
-  await src_delay(200);
-  await src_processPhoto(src_image);
-}
-document.getElementById('remove-makeup-filter').onclick = function() {
-  src_myBeauty.reset()
-  src_deepAR.clearEffect()
-  src_deepAR.processImage(src_image);
-}
-document.getElementById('download-photo').onclick = async function() {
-  const screenshot = await src_deepAR.takeScreenshot();
-  const a = document.createElement('a');
-  a.href = screenshot;
-  a.download = 'photo.png';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-}
+// document.getElementById('load-photo-1').onclick = async function() {
+//   image = await processPhoto('./test_photos/camera2.jpg');
+// }
+// document.getElementById('load-photo-2').onclick = async function() {
+//   image = await processPhoto('./test_photos/camera3.jpg');
+// }
+// document.getElementById('apply-makeup-look-1').onclick = async function() {
+//   // deepAR.switchEffect('./effects/look1');
+//   if (myBeauty) {
+//     myBeauty.faceMorphing.eyeSize.set(-50);
+//     myBeauty.skinSmoothing.set(85);
+//     myBeauty.faceMakeup.blush.intensity.set(40);
+//     myBeauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
+//     myBeauty.lipMakeup.lipstick.enable.set(true);
+//     myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
+//     myBeauty.lipMakeup.lipstick.amount.set(70);
+//   } else {
+//     log('myBeauty effect null...', 'info');
+//   }
+//   await delay(200);
+//   image = await processPhoto(image);
+// }
+// document.getElementById('apply-makeup-look-2').onclick = async function() {
+//   if (myBeauty) {
+//     myBeauty.colorFilters.filter.setTemplate("filmContrast");
+//   } else {
+//     log('myBeauty effect null...', 'info');
+//   }
+//   await delay(200);
+//   await processPhoto(image);
+// }
+// document.getElementById('remove-makeup-filter').onclick = function() {
+//   myBeauty.reset()
+//   deepAR.clearEffect()
+//   deepAR.processImage(image);
+// }
+// document.getElementById('download-photo').onclick = async function() {
+//   const screenshot = await deepAR.takeScreenshot();
+//   const a = document.createElement('a');
+//   a.href = screenshot;
+//   a.download = 'photo.png';
+//   document.body.appendChild(a);
+//   a.click();
+//   a.remove();
+// }
 
 })();
 
