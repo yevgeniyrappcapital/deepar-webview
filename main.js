@@ -287,7 +287,7 @@ window.getImage = async function () {
 
     try {
         src_log('Экспорт текущего изображения из DeepAR...', 'info');
-        const dataURL = await src_deepAR.exportFrame();
+        const dataURL = await src_deepAR.takeScreenshot();
         src_log('Экспорт изображения завершен.', 'success');
         return dataURL;
     } catch (error) {
