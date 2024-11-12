@@ -292,7 +292,7 @@ async function src_process(inputImage) {
 
 /**
  * Returns the current image as a Data URL.
- * @returns {Promise<string>} Data URL of the image.
+ * @returns {string} Data URL of the image.
  */
 window.getImage = function () {
   src_log('начало getImage', 'info');
@@ -300,11 +300,12 @@ window.getImage = function () {
     src_log('deepARScren Не удалось получить изображение.', 'error');
     return '';
   }
+  src_log('возврат: ' + src_deepARScren.substring(0,42), 'info');
   return src_deepARScren;
 }
 
 window.prepareImage = async function () {
-  src_log('начало getImage', 'info');
+  src_log('начало prepareImage', 'info');
   if (!src_deepAR) {
     src_log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
     return 'Er1';
