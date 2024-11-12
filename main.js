@@ -115,7 +115,6 @@ src_log('ok', 'info');
 
 // Log the version. Just in case.
 console.log("Deepar version: " + window.deepar.version);
-console.log("Beauty version: " + window.Beauty.version);
 
 /**
  * Добавляет сообщение в лог.
