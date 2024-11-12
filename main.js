@@ -272,8 +272,9 @@ async function src_process(inputImage) {
     await src_delay(200);
     src_image = await src_processPhoto(src_image);
     src_log('DeepAR обновлен', 'info');
-    await src_delay(1000);
+    await src_delay(5000);
     src_deepARScren = await prepareImage()
+    src_log('DeepAR prepareImage', 'info');
 
     // // Get the processed image as a Data URL
     // const processedDataURL = await deepAR.takeScreenshot();
