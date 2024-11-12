@@ -232,9 +232,14 @@ async function src_uploadImage(imageData) {
   img.onload = async () => {
       document.getElementById("loader-wrapper").style.display = "none";
       src_image = img;
-      src_deepAR.processImage(src_image);
-      src_log('Изображение успешно установлено и отображено.', 'success');
-      src_image = await src_processPhoto(src_image);
+
+      src_deepAR.switchEffect('./effects/look1').then(async() => {
+        src_deepAR.clearEffect()
+        src_log('Изображение успешно установлено и отображено.', 'success');
+        src_image = await src_processPhoto(src_image);
+      }).catch(() => {
+        src_log('Изображение ОШБИБКА установлено и отображено.', 'error');
+      });
   };
 
   img.onerror = () => {
@@ -269,8 +274,8 @@ async function src_processPhoto(src) {
   // Process image multiple times to get more accurate tracking results.
   // Face tracking gets better with successive frames.
   src_deepAR.processImage(image);
-  src_deepAR.processImage(image);
-  src_deepAR.processImage(image);
+  // deepAR.processImage(image);
+  // deepAR.processImage(image);
 
   return image;
 }
@@ -288,6 +293,9 @@ document.getElementById('apply-makeup-look-1').onclick = async function() {
     src_myBeauty.skinSmoothing.set(85);
     src_myBeauty.faceMakeup.blush.intensity.set(40);
     src_myBeauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
+    src_myBeauty.lipMakeup.lipstick.enable.set(true);
+    src_myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
+    src_myBeauty.lipMakeup.lipstick.amount.set(70);
   } else {
     src_log('myBeauty effect null...', 'info');
   }
@@ -296,9 +304,6 @@ document.getElementById('apply-makeup-look-1').onclick = async function() {
 }
 document.getElementById('apply-makeup-look-2').onclick = async function() {
   if (src_myBeauty) {
-    src_myBeauty.lipMakeup.lipstick.enable.set(true);
-    src_myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
-    src_myBeauty.lipMakeup.lipstick.amount.set(70);
     src_myBeauty.colorFilters.filter.setTemplate("filmContrast");
   } else {
     src_log('myBeauty effect null...', 'info');
