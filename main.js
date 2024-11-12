@@ -296,7 +296,7 @@ let src_getImage = async function () {
   src_log('начало getImage', 'info');
     if (!src_deepAR) {
         src_log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
-        return '';
+        return 'Er1';
     }
 
     try {
@@ -307,7 +307,7 @@ let src_getImage = async function () {
         return dataURL;
     } catch (error) {
         src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
-        return '';
+        return 'Er2';
     }
 }
 
