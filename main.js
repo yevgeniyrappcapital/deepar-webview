@@ -188,7 +188,7 @@ async function src_initializeDeepAR(licenseKey) {
         // document.getElementById("loader-wrapper").style.display = "none";
 
         // Initial image
-        src_image = await src_getImage('./test_photos/camera3.jpg');
+        src_image = await src_getImageFrom('./test_photos/camera1.jpg');
               
         // Trigger the face tracking initialization by loading the effect.
         src_deepAR.switchEffect('./effects/look1').then(() => {
@@ -202,7 +202,7 @@ async function src_initializeDeepAR(licenseKey) {
       
         // Load the inital photo.
         src_image = await src_processPhoto(src_image);
-        document.getElementById("loader-wrapper").style.display = "none";
+        // document.getElementById("loader-wrapper").style.display = "none";
       
     } catch (error) {
         src_log(`Ошибка инициализации DeepAR: ${error}`, 'error');
@@ -241,8 +241,64 @@ async function src_uploadImage(imageData) {
   };
 }
 
+/**
+ * Обрабатывает текущее изображение, применяя макияж с помощью DeepAR.
+ */
+window.processImage = function() {
+  if (!src_deepAR || !src_image) {
+      src_log('Изображение не установлено или DeepAR не инициализирован.', 'error');
+      return;
+  }
+  src_process(src_image)
+}
+
+async function src_process(inputImage) {
+  src_log('Начало процесса применения макияжа...', 'info');
+
+  try {
+    if (src_myBeauty) {
+      src_myBeauty.faceMorphing.eyeSize.set(-50);
+      src_myBeauty.skinSmoothing.set(85);
+      src_myBeauty.faceMakeup.blush.intensity.set(40);
+      src_myBeauty.faceMakeup.blush.color.set({r:226, g:132, b:130, a:255});
+      src_myBeauty.lipMakeup.lipstick.enable.set(true);
+      src_myBeauty.lipMakeup.lipstick.shade.setTemplate("matteNude");
+      src_myBeauty.lipMakeup.lipstick.amount.set(70);
+      src_log('Настройки макияжа применены.', 'info');
+    } else {
+      src_log('myBeauty effect null...', 'info');
+    }
+    await src_delay(200);
+    src_image = await src_processPhoto(src_image);
+    src_log('DeepAr обнволен', 'info');
+  } catch (error) {
+      src_log(`Ошибка при обработке изображения: ${error}`, 'error');
+  }
+}
+
+/**
+ * Возвращает текущее изображение в формате Data URL.
+ * @returns {Promise<string>} Data URL изображения.
+ */
+window.getImage = async function () {
+    if (!src_deepAR) {
+        src_log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
+        return '';
+    }
+
+    try {
+        src_log('Экспорт текущего изображения из DeepAR...', 'info');
+        const dataURL = await src_deepAR.exportFrame(src_deepAR.OutputFormat.PNG);
+        src_log('Экспорт изображения завершен.', 'success');
+        return dataURL;
+    } catch (error) {
+        src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
+        return '';
+    }
+}
+
 // Nice util function for loading an image.
-async function src_getImage(src) {
+async function src_getImageFrom(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.onload = () => {resolve(img)};
@@ -260,7 +316,7 @@ async function src_delay(t) {
 async function src_processPhoto(src) {
   let image;
   if(typeof src == "string") {
-    image = await src_getImage(src);
+    image = await src_getImageFrom(src);
   } else {
     image = src;
   }
