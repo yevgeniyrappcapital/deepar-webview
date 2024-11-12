@@ -292,7 +292,7 @@ async function src_process(inputImage) {
  * Returns the current image as a Data URL.
  * @returns {Promise<string>} Data URL of the image.
  */
-let src_getImage = async function () {
+window.getImage = async function () {
   src_log('начало getImage', 'info');
     if (!src_deepAR) {
         src_log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
@@ -310,8 +310,6 @@ let src_getImage = async function () {
         return 'Er2';
     }
 }
-
-window.getImage = src_getImage
 
 // Utility function for loading an image.
 async function src_getImageFrom(src) {
