@@ -296,10 +296,13 @@ async function src_process(inputImage) {
  */
 window.getImage = function () {
   src_log('начало getImage', 'info');
+  src_log('начало2 getImage', 'info');
   if (!src_deepARScren) {
+    src_log('начало3 getImage', 'info');
     src_log('deepARScren Не удалось получить изображение.', 'error');
     return '';
   }
+  src_log('начало4 getImage', 'info');
   src_log('возврат: ' + src_deepARScren.substring(0,42), 'info');
   return src_deepARScren;
 }
