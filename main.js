@@ -272,17 +272,17 @@ async function src_process(inputImage) {
     src_image = await src_processPhoto(src_image);
     src_log('DeepAR обновлен', 'info');
 
-    // Get the processed image as a Data URL
-    const processedDataURL = await src_deepAR.takeScreenshot();
-    src_log('Экспорт обработанного изображения завершен.', 'success');
+    // // Get the processed image as a Data URL
+    // const processedDataURL = await deepAR.takeScreenshot();
+    // log('Экспорт обработанного изображения завершен.', 'success');
 
-    // Send the processed image back to Swift via message handler
-    if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
-        window.webkit.messageHandlers.imageHandler.postMessage(processedDataURL);
-        src_log('Обработанное изображение отправлено обратно в Swift.', 'success');
-    } else {
-        src_log('Message handler "imageHandler" не найден.', 'error');
-    }
+    // // Send the processed image back to Swift via message handler
+    // if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
+    //     window.webkit.messageHandlers.imageHandler.postMessage(processedDataURL);
+    //     log('Обработанное изображение отправлено обратно в Swift.', 'success');
+    // } else {
+    //     log('Message handler "imageHandler" не найден.', 'error');
+    // }
   } catch (error) {
       src_log(`Ошибка при обработке изображения: ${error}`, 'error');
   }
@@ -293,6 +293,7 @@ async function src_process(inputImage) {
  * @returns {Promise<string>} Data URL of the image.
  */
 window.getImage = async function () {
+  src_log('начало getImage', 'info');
     if (!src_deepAR) {
         src_log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
         return '';
