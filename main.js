@@ -188,20 +188,20 @@ async function src_initializeDeepAR(licenseKey) {
         // document.getElementById("loader-wrapper").style.display = "none";
 
         // Initial image
-        // image = await getImage('./test_photos/camera1.jpg');
+        src_image = await src_getImage('./test_photos/camera1.jpg');
               
         // Trigger the face tracking initialization by loading the effect.
-        // deepAR.switchEffect('./effects/look1').then(() => {
-        //   // Clear the effect after it has been loaded.
-        //   deepAR.clearEffect()
-        //   // Push the current image frame because clearEffect can sometimes produce a black image when setPaused is called.
-        //   deepAR.processImage(image);
-        // }).catch(() => {
-        //   log('Изображение ОШБИБКА установлено и отображено.', 'error');
-        // });
+        src_deepAR.switchEffect('./effects/look1').then(() => {
+          // Clear the effect after it has been loaded.
+          src_deepAR.clearEffect()
+          // Push the current image frame because clearEffect can sometimes produce a black image when setPaused is called.
+          src_deepAR.processImage(src_image);
+        }).catch(() => {
+          src_log('Изображение ОШБИБКА установлено и отображено.', 'error');
+        });
       
         // Load the inital photo.
-        // image = await processPhoto(image);
+        src_image = await src_processPhoto(src_image);
       
     } catch (error) {
         src_log(`Ошибка инициализации DeepAR: ${error}`, 'error');
@@ -229,17 +229,9 @@ async function src_uploadImage(imageData) {
   img.src = imageData;
 
   img.onload = async () => {
-      document.getElementById("loader-wrapper").style.display = "none";
       src_image = img;
-      src_deepAR.processImage(src_image);
-      src_deepAR.switchEffect('./effects/look1').then(() => {
-        src_deepAR.clearEffect()
-        src_deepAR.processImage(src_image);
-        src_log('Изображение switchEffect.', 'success');
-      }).catch(() => {
-        src_log('Изображение ОШБИБКА установлено и отображено.', 'error');
-      });
       src_image = await src_processPhoto(src_image);
+      document.getElementById("loader-wrapper").style.display = "none";
       src_log('Изображение успешно установлено и отображено.', 'success');
   };
 
