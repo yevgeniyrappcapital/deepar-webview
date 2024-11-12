@@ -294,7 +294,7 @@ async function src_process(inputImage) {
  * Returns the current image as a Data URL.
  * @returns {Promise<string>} Data URL of the image.
  */
-window.getImage = async function () {
+window.getImage = function () {
   src_log('начало getImage', 'info');
   if (!src_deepARScren) {
     src_log('deepARScren Не удалось получить изображение.', 'error');
