@@ -296,18 +296,25 @@ window.getImage = async function () {
   src_log('начало getImage', 'info');
     if (!src_deepAR) {
         src_log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
-        return 'Er1';
+        return new Promise(function(resolve, reject) {
+          resolve("Er1");
+      });
     }
 
     try {
-        src_log('Экспорт текущего изображения из DeepAR...', 'info');
-        const dataURL = await src_deepAR.takeScreenshot();
-        src_log('Экспорт изображения завершен.', 'success');
-        src_log(dataURL.substring(0,42));
-        return dataURL;
+      src_log('Экспорт текущего изображения из DeepAR...', 'info');
+      const dataURL = await src_deepAR.takeScreenshot()
+        .then(function(result) {
+            return result;
+        });
+      src_log('Экспорт изображения завершен.', 'success');
+      src_log(dataURL.substring(0,42));
+      return dataURL;
     } catch (error) {
-        src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
-        return 'Er2';
+      src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
+      return new Promise(function(resolve, reject) {
+        resolve("Er2");
+    });
     }
 }
 
