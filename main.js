@@ -110,9 +110,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 src_log('window.deepar', 'info');
-window.deepar = src_deepar_WEBPACK_IMPORTED_MODULE_0_
+window.deepar = src_deepar_WEBPACK_IMPORTED_MODULE_0_;
 src_log('window.Beauty', 'info');
-window.Beauty = src_deepar_beauty_WEBPACK_IMPORTED_MODULE_1_
+window.Beauty = src_deepar_beauty_WEBPACK_IMPORTED_MODULE_1_;
 src_log('ok', 'info');
 
 // Log the version. Just in case.
@@ -125,13 +125,15 @@ console.log("Deepar version: " + window.deepar.version);
  */
 function src_log(message, type = 'info') {
     const logContainer = document.getElementById('logContainer');
-    const timestamp = new Date().toLocaleTimeString();
-    const logEntry = document.createElement('div');
-    logEntry.className = `log-entry ${type}`;
-    logEntry.textContent = `[${timestamp}] ${message}`;
-    logContainer.appendChild(logEntry);
-    logContainer.scrollTop = logContainer.scrollHeight;
-    console.log(`[${timestamp}] ${message}`);
+    if (logContainer) {
+        const timestamp = new Date().toLocaleTimeString();
+        const logEntry = document.createElement('div');
+        logEntry.className = `log-entry ${type}`;
+        logEntry.textContent = `[${timestamp}] ${message}`;
+        logContainer.appendChild(logEntry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+    }
+    console.log(`[${new Date().toLocaleTimeString()}] ${message}`);
 }
 
 // Resize the canvas according to screen size.
@@ -218,7 +220,7 @@ window.setImage = function(imageData) {
       return;
   }
 
-  src_uploadImage(imageData)
+  src_uploadImage(imageData);
 }
 
 async function src_uploadImage(imageData) {
@@ -247,7 +249,7 @@ window.processImage = function() {
       src_log('Изображение не установлено или DeepAR не инициализирован.', 'error');
       return;
   }
-  src_process(src_image)
+  src_process(src_image);
 }
 
 async function src_process(inputImage) {
@@ -274,7 +276,7 @@ async function src_process(inputImage) {
     const processedDataURL = await src_deepAR.takeScreenshot();
     src_log('Экспорт обработанного изображения завершен.', 'success');
 
-    // Send the processed image back to Swift
+    // Send the processed image back to Swift via message handler
     if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
         window.webkit.messageHandlers.imageHandler.postMessage(processedDataURL);
         src_log('Обработанное изображение отправлено обратно в Swift.', 'success');
@@ -300,19 +302,9 @@ window.getImage = async function () {
         src_log('Экспорт текущего изображения из DeepAR...', 'info');
         const dataURL = await src_deepAR.takeScreenshot();
         src_log('Экспорт изображения завершен.', 'success');
-        // Send the Data URL back to Swift via message handler
-        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
-            window.webkit.messageHandlers.imageHandler.postMessage(dataURL);
-            src_log('Data URL изображения отправлен обратно в Swift.', 'success');
-        }
         return dataURL;
     } catch (error) {
         src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
-        // Send an empty string back to Swift in case of error
-        if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
-            window.webkit.messageHandlers.imageHandler.postMessage('');
-            src_log('Пустой Data URL отправлен обратно в Swift из-за ошибки.', 'error');
-        }
         return '';
     }
 }
@@ -324,7 +316,7 @@ async function src_getImageFrom(src) {
     img.onload = () => {resolve(img)};
     img.onerror = reject;
     img.src = src;
-  })
+  });
 }
 
 // Using setTimeout with await.
