@@ -188,7 +188,7 @@ async function src_initializeDeepAR(licenseKey) {
         // document.getElementById("loader-wrapper").style.display = "none";
 
         // Initial image
-        src_image = await src_getImage('./test_photos/camera1.jpg');
+        src_image = await src_getImage('./test_photos/camera3.jpg');
               
         // Trigger the face tracking initialization by loading the effect.
         src_deepAR.switchEffect('./effects/look1').then(() => {
@@ -202,6 +202,7 @@ async function src_initializeDeepAR(licenseKey) {
       
         // Load the inital photo.
         src_image = await src_processPhoto(src_image);
+        document.getElementById("loader-wrapper").style.display = "none";
       
     } catch (error) {
         src_log(`Ошибка инициализации DeepAR: ${error}`, 'error');
@@ -274,10 +275,10 @@ async function src_processPhoto(src) {
 }
 
 document.getElementById('load-photo-1').onclick = async function() {
-  src_image = await src_processPhoto('./test_photos/camera1.jpg');
+  src_image = await src_processPhoto('./test_photos/camera2.jpg');
 }
 document.getElementById('load-photo-2').onclick = async function() {
-  src_image = await src_processPhoto('./test_photos/camera2.jpg');
+  src_image = await src_processPhoto('./test_photos/camera3.jpg');
 }
 document.getElementById('apply-makeup-look-1').onclick = async function() {
   // deepAR.switchEffect('./effects/look1');
