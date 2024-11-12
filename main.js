@@ -185,29 +185,61 @@ async function src_initializeDeepAR(licenseKey) {
         src_log('Эффект макияжа успешно загружен.', 'success');
 
         // Hide the loading screen.
-        document.getElementById("loader-wrapper").style.display = "none";
+        // document.getElementById("loader-wrapper").style.display = "none";
 
         // Initial image
-        src_image = await src_getImage('./test_photos/camera1.jpg');
+        // image = await getImage('./test_photos/camera1.jpg');
               
         // Trigger the face tracking initialization by loading the effect.
-        src_deepAR.switchEffect('./effects/look1').then(() => {
-          // Clear the effect after it has been loaded.
-          src_deepAR.clearEffect()
-          // Push the current image frame because clearEffect can sometimes produce a black image when setPaused is called.
-          src_deepAR.processImage(src_image);
-        }).catch(() => {
-          // The switchEffectCanceled error will be thrown if we try to load some beuty effect while this promise is not resolved.
-          // So we just ignore this error.
-        });
+        // deepAR.switchEffect('./effects/look1').then(() => {
+        //   // Clear the effect after it has been loaded.
+        //   deepAR.clearEffect()
+        //   // Push the current image frame because clearEffect can sometimes produce a black image when setPaused is called.
+        //   deepAR.processImage(image);
+        // }).catch(() => {
+        //   // The switchEffectCanceled error will be thrown if we try to load some beuty effect while this promise is not resolved.
+        //   // So we just ignore this error.
+        // });
       
         // Load the inital photo.
-        src_image = await src_processPhoto(src_image);
+        // image = await processPhoto(image);
       
     } catch (error) {
         src_log(`Ошибка инициализации DeepAR: ${error}`, 'error');
         alert('Не удалось инициализировать DeepAR.');
     }
+}
+
+/**
+ * Устанавливает изображение, полученное из Swift.
+ * @param {string} imageData - Строка в формате Data URL (например, "data:image/png;base64,...")
+ */
+window.setImage = function(imageData) {
+  if (!src_deepAR) {
+      src_log('DeepAR не инициализирован. Не удалось установить изображение.', 'error');
+      return;
+  }
+
+  src_uploadImage(imageData)
+}
+
+async function src_uploadImage(imageData) {
+  src_log('Загрузка изображения из Swift...', 'info');
+  // Создаем Image объект
+  const img = new Image();
+  img.src = imageData;
+
+  img.onload = async () => {
+      document.getElementById("loader-wrapper").style.display = "none";
+      src_image = img;
+      src_deepAR.processImage(src_image);
+      src_log('Изображение успешно установлено и отображено.', 'success');
+      src_image = await src_processPhoto(src_image);
+  };
+
+  img.onerror = () => {
+      src_log('Не удалось загрузить изображение для установки.', 'error');
+  };
 }
 
 // Nice util function for loading an image.
