@@ -104,6 +104,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var src_deepar_WEBPACK_IMPORTED_MODULE_0_ = __webpack_require__(568);
 /* harmony import */ var src_deepar_beauty_WEBPACK_IMPORTED_MODULE_1_ = __webpack_require__(846);
 /* harmony import */ var src_deepar_beauty_WEBPACK_IMPORTED_MODULE_1_default = /*#__PURE__*/__webpack_require__.n(src_deepar_beauty_WEBPACK_IMPORTED_MODULE_1_);
+// JavaScript Part (index.html or your JS file)
+
 
 
 
@@ -117,9 +119,9 @@ src_log('ok', 'info');
 console.log("Deepar version: " + window.deepar.version);
 
 /**
- * Добавляет сообщение в лог.
- * @param {string} message - Сообщение для логирования.
- * @param {string} type - Тип сообщения: 'info', 'success', 'error'.
+ * Adds a message to the log.
+ * @param {string} message - The message to log.
+ * @param {string} type - The type of message: 'info', 'success', 'error'.
  */
 function src_log(message, type = 'info') {
     const logContainer = document.getElementById('logContainer');
@@ -142,9 +144,9 @@ let src_myBeauty = null;
 let src_image = null;
 
 /**
- * Устанавливает лицензионный ключ и инициализирует DeepAR.
- * Эта функция должна быть вызвана из Swift после загрузки страницы.
- * @param {string} licenseKey - Лицензионный ключ DeepAR.
+ * Sets the license key and initializes DeepAR.
+ * This function should be called from Swift after the page loads.
+ * @param {string} licenseKey - The DeepAR license key.
  */
 window.setLicenseKey = function(licenseKey) {
   if (src_deepAR) {
@@ -156,8 +158,8 @@ window.setLicenseKey = function(licenseKey) {
 }
 
 /**
- * Инициализирует DeepAR с заданным лицензионным ключом.
- * @param {string} licenseKey - Лицензионный ключ DeepAR.
+ * Initializes DeepAR with the given license key.
+ * @param {string} licenseKey - The DeepAR license key.
  */
 async function src_initializeDeepAR(licenseKey) {
     src_log('Инициализация DeepAR начата...', 'info');
@@ -179,7 +181,7 @@ async function src_initializeDeepAR(licenseKey) {
         src_deepAR.setPaused(true);
         src_log('DeepAR успешно инициализирован.', 'success');
 
-        // Загрузка Beauty Pack
+        // Load Beauty Pack
         src_log('Загрузка Beauty Pack начата...', 'info');
         src_myBeauty = await window.Beauty.initializeBeauty(src_deepAR, "https://cdn.jsdelivr.net/npm/@deepar/beauty/dist/");
         src_log('Эффект макияжа успешно загружен.', 'success');
@@ -207,8 +209,8 @@ async function src_initializeDeepAR(licenseKey) {
 }
 
 /**
- * Устанавливает изображение, полученное из Swift.
- * @param {string} imageData - Строка в формате Data URL (например, "data:image/png;base64,...")
+ * Sets the image received from Swift.
+ * @param {string} imageData - A Data URL string (e.g., "data:image/png;base64,...")
  */
 window.setImage = function(imageData) {
   if (!src_deepAR) {
@@ -221,7 +223,7 @@ window.setImage = function(imageData) {
 
 async function src_uploadImage(imageData) {
   src_log('Загрузка изображения из Swift...', 'info');
-  // Создаем Image объект
+  // Create an Image object
   const img = new Image();
   img.src = imageData;
 
@@ -238,7 +240,7 @@ async function src_uploadImage(imageData) {
 }
 
 /**
- * Обрабатывает текущее изображение, применяя макияж с помощью DeepAR.
+ * Processes the current image by applying makeup using DeepAR.
  */
 window.processImage = function() {
   if (!src_deepAR || !src_image) {
@@ -268,11 +270,11 @@ async function src_process(inputImage) {
     src_image = await src_processPhoto(src_image);
     src_log('DeepAR обновлен', 'info');
 
-    // Получаем обработанное изображение как Data URL
+    // Get the processed image as a Data URL
     const processedDataURL = await src_deepAR.takeScreenshot();
     src_log('Экспорт обработанного изображения завершен.', 'success');
 
-    // Отправляем обработанное изображение обратно в Swift
+    // Send the processed image back to Swift
     if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
         window.webkit.messageHandlers.imageHandler.postMessage(processedDataURL);
         src_log('Обработанное изображение отправлено обратно в Swift.', 'success');
@@ -285,8 +287,8 @@ async function src_process(inputImage) {
 }
 
 /**
- * Возвращает текущее изображение в формате Data URL.
- * @returns {Promise<string>} Data URL изображения.
+ * Returns the current image as a Data URL.
+ * @returns {Promise<string>} Data URL of the image.
  */
 window.getImage = async function () {
     if (!src_deepAR) {
@@ -298,7 +300,7 @@ window.getImage = async function () {
         src_log('Экспорт текущего изображения из DeepAR...', 'info');
         const dataURL = await src_deepAR.takeScreenshot();
         src_log('Экспорт изображения завершен.', 'success');
-        // Отправляем Data URL обратно в Swift через message handler
+        // Send the Data URL back to Swift via message handler
         if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
             window.webkit.messageHandlers.imageHandler.postMessage(dataURL);
             src_log('Data URL изображения отправлен обратно в Swift.', 'success');
@@ -306,7 +308,7 @@ window.getImage = async function () {
         return dataURL;
     } catch (error) {
         src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
-        // Отправляем пустую строку обратно в Swift при ошибке
+        // Send an empty string back to Swift in case of error
         if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
             window.webkit.messageHandlers.imageHandler.postMessage('');
             src_log('Пустой Data URL отправлен обратно в Swift из-за ошибки.', 'error');
@@ -315,7 +317,7 @@ window.getImage = async function () {
     }
 }
 
-// Nice util function for loading an image.
+// Utility function for loading an image.
 async function src_getImageFrom(src) {
   return new Promise((resolve, reject) => {
     const img = new Image();
