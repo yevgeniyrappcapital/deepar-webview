@@ -280,20 +280,30 @@ async function src_process(inputImage) {
  * @returns {Promise<string>} Data URL изображения.
  */
 window.getImage = async function () {
-    if (!src_deepAR) {
-        src_log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
-        return '';
-    }
+  if (!src_deepAR) {
+      src_log('DeepAR не инициализирован. Не удалось получить изображение.', 'error');
+      // Отправляем пустую строку или сообщение об ошибке в Swift
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
+          window.webkit.messageHandlers.imageHandler.postMessage('');
+      }
+      return;
+  }
 
-    try {
-        src_log('Экспорт текущего изображения из DeepAR...', 'info');
-        const dataURL = await src_deepAR.takeScreenshot();
-        src_log('Экспорт изображения завершен.', 'success');
-        return dataURL;
-    } catch (error) {
-        src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
-        return '';
-    }
+  try {
+      src_log('Экспорт текущего изображения из DeepAR...', 'info');
+      const dataURL = await src_deepAR.takeScreenshot();
+      src_log('Экспорт изображения завершен.', 'success');
+      // Отправляем Data URL изображения в Swift
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
+          window.webkit.messageHandlers.imageHandler.postMessage(dataURL);
+      }
+  } catch (error) {
+      src_log(`Ошибка при экспорте изображения: ${error}`, 'error');
+      // Отправляем пустую строку или сообщение об ошибке в Swift
+      if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.imageHandler) {
+          window.webkit.messageHandlers.imageHandler.postMessage('');
+      }
+  }
 }
 
 // Nice util function for loading an image.
