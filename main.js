@@ -295,21 +295,11 @@ async function src_process(inputImage) {
  * @returns {string} Data URL of the image.
  */
 window.getImage = function () {
-  src_log('начало getImage', 'info');
-  src_log('начало2 getImage', 'info');
+  src_log('getImage', 'info');
   if (!src_deepARScren) {
-    src_log('начало3 getImage', 'info');
     src_log('deepARScren Не удалось получить изображение.', 'error');
     return '';
   }
-  src_log('начало4 getImage', 'info');
-  if (src_deepARScren.length > 0) {
-    src_log('начало5 getImage', 'info');
-  }
-  if (src_deepARScren.length > 42) {
-    src_log(src_deepARScren.substring(0,42), 'info');
-  }
-  src_log('начало6 getImage', 'info');
   return src_deepARScren;
 }
 
